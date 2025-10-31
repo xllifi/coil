@@ -11,9 +11,12 @@ import com.vanniktech.maven.publish.JavadocJar.Dokka
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
+import org.gradle.api.credentials.PasswordCredentials
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.credentials
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaExtension
@@ -63,7 +66,15 @@ fun Project.setupPublishing(
 ) {
     extensions.configure<MavenPublishBaseExtension> {
         pomFromGradleProperties()
-        publishToMavenCentral()
+        extensions.configure<PublishingExtension> {
+            repositories {
+                maven {
+                    name = "xllifi"
+                    url = uri("https://maven.xllifi.ru/snapshots")
+                    credentials(PasswordCredentials::class)
+                }
+            }
+        }
         signAllPublications()
         action()
     }
